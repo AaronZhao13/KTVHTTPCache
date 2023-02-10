@@ -25,6 +25,9 @@
 - (instancetype)initWithURL:(NSURL *)URL
 {
     if (self = [super init]) {
+        if (!self.coreLock) {
+            self.coreLock = [[NSRecursiveLock alloc] init];
+        }
         self->_URL = [URL copy];
         self->_key = [[KTVHCURLTool tool] keyWithURL:self.URL];
         self->_createTimeInterval = [NSDate date].timeIntervalSince1970;
@@ -36,6 +39,9 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super init]) {
+        if (!self.coreLock) {
+            self.coreLock = [[NSRecursiveLock alloc] init];
+        }
         @try {
             self->_URL = [NSURL URLWithString:[aDecoder decodeObjectForKey:@"URLString"]];
             self->_key = [aDecoder decodeObjectForKey:@"uniqueIdentifier"];
@@ -332,9 +338,6 @@
 
 - (void)lock
 {
-    if (!self.coreLock) {
-        self.coreLock = [[NSRecursiveLock alloc] init];
-    }
     [self.coreLock lock];
     if (!self.lockingUnitItems) {
         self.lockingUnitItems = [NSMutableArray array];

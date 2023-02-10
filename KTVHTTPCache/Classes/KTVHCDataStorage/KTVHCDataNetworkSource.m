@@ -43,6 +43,9 @@
     if (self = [super init])
     {
         KTVHCLogAlloc(self);
+        if (!self.coreLock) {
+            self.coreLock = [[NSLock alloc] init];
+        }
         self->_request = reqeust;
         self->_range = reqeust.range;
         KTVHCLogDataNetworkSource(@"%p, Create network source\nrequest : %@\nrange : %@", self, self.request, KTVHCStringFromRange(self.range));
@@ -286,9 +289,6 @@
 
 - (void)lock
 {
-    if (!self.coreLock) {
-        self.coreLock = [[NSLock alloc] init];
-    }
     [self.coreLock lock];
 }
 

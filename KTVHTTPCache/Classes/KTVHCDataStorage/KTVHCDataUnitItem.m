@@ -20,6 +20,9 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
+    if (!self.coreLock) {
+        self.coreLock = [[NSRecursiveLock alloc] init];
+    }
     [self lock];
     KTVHCDataUnitItem *obj = [[KTVHCDataUnitItem alloc] init];
     obj->_relativePath = self.relativePath;
@@ -39,6 +42,9 @@
 - (instancetype)initWithPath:(NSString *)path offset:(uint64_t)offset
 {
     if (self = [super init]) {
+        if (!self.coreLock) {
+            self.coreLock = [[NSRecursiveLock alloc] init];
+        }
         self->_createTimeInterval = [NSDate date].timeIntervalSince1970;
         self->_relativePath = [KTVHCPathTool converToRelativePath:path];
         self->_absolutePath = [KTVHCPathTool converToAbsoultePath:path];
@@ -52,6 +58,9 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super init]) {
+        if (!self.coreLock) {
+            self.coreLock = [[NSRecursiveLock alloc] init];
+        }
         self->_createTimeInterval = [[aDecoder decodeObjectForKey:@"createTimeInterval"] doubleValue];
         self->_relativePath = [aDecoder decodeObjectForKey:@"relativePath"];
         self->_absolutePath = [KTVHCPathTool converToAbsoultePath:self.relativePath];
@@ -90,9 +99,6 @@
 
 - (void)lock
 {
-    if (!self.coreLock) {
-        self.coreLock = [[NSRecursiveLock alloc] init];
-    }
     [self.coreLock lock];
 }
 

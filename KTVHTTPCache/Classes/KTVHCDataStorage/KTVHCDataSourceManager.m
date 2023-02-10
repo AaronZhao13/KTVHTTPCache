@@ -34,6 +34,9 @@
 {
     if (self = [super init]) {
         KTVHCLogAlloc(self);
+        if (!self.coreLock) {        
+            self.coreLock = [[NSLock alloc] init];
+        }
         self->_sources = [sources mutableCopy];
         self->_delegate = delegate;
         self->_delegateQueue = delegateQueue;
@@ -283,9 +286,6 @@
 
 - (void)lock
 {
-    if (!self.coreLock) {
-        self.coreLock = [[NSLock alloc] init];
-    }
     [self.coreLock lock];
 }
 
